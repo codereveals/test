@@ -60,54 +60,23 @@ const uploadCategoryImagesController = async (req, res) => {
 // Create a Category 
 const createCategoryController = async (req, res) => {
     try {
-        imagesArr = [];
+        const userId = req.userId
 
-        const userId = req.userId;  // Auth Middleware
-        const image = req.files;
+        let category = new CategoryModel({
+            name: req.body.name,
+            images: imagesArr,
+            color: req.body.color,
+            parentId: req.body.parentId,
+            parentCatName: req.body.parentCatName
+        })
 
-        // ---- Original Category Image Store ====
-
-        const options = {
-            use_filename: true,
-            unique_filename: false,
-            overwrite: false
-        }
-
-        for (let i = 0; i < image?.length; i++) {
-            const img = await cloudinary.uploader.upload(
-                image[i]?.path,
-                options,
-                function (error, result) {
-                    imagesArr.push(result.secure_url);
-                    fs.unlinkSync(`uploads/${req?.files[i]?.filename}`);
-                    console.log(result);
-                }
-            )
-
-
-            let category = new CategoryModel({
-                name: req.body.name,
-                images: imagesArr,
-                color: req.body.color,
-                parentId: req.body.parentId,
-                parentCatName: req.body.parentCatName
-            })
-
-            if (!category) {
-                return res.status(500).json({
-                    message: "Caegory is required",
-                    error: true,
-                    success: false
-                });
-            }
-
-            category = await category.save();
-            imagesArr = []
-
-            return res.status(200).json({
-                category: category
-            })
-        }
+        category = await category.save()
+        return res.status(200).json({
+            message: "Create Category Successfully",
+            error: false,
+            success: true,
+            category: category
+        });
 
     } catch (error) {
         console.error("Error uploading avatar:", error.message);

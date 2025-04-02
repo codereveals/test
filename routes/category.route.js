@@ -7,7 +7,7 @@ import { createCategoryController, uploadCategoryImagesController } from "../con
 const categoryRouter = Router()
 
 categoryRouter.post("/uploadCatImages", auth, upload.array('images'), uploadCategoryImagesController)
-categoryRouter.post("/create-category", auth, upload.array('images'), createCategoryController)
+categoryRouter.post("/create-category", auth, createCategoryController)
 
 
 export default categoryRouter
